@@ -521,4 +521,172 @@ snippet attributes_header "" !b
 $0
 endsnippet
 
+######################
+#  openssl cookbook  #
+######################
+
+snippet secure_password "" !b
+include Opscode::OpenSSL::Password
+
+set_unless[:my_password] = secure_password
+endsnippet
+
+########################
+#  logrotate cookbook  #
+########################
+
+snippet logrotate "" !b
+logrotate_app "${1:tomcat-myapp}" do
+  cookbook "logrotate"
+  path "${2:/var/log/tomcat/myapp.log}"
+  options [${3:"missingok", "delaycompress", "notifempty"}]
+  frequency "${4:daily}"
+  rotate ${5:30}
+  create "${6:644 root adm}"
+end
+endsnippet
+
+##################
+#  ark cookbook  #
+##################
+
+snippet arkf "" !b
+ark "${1:haproxy}" do
+    url  "${2:http://haproxy.1wt.eu/download/1.5/src/snapshot/haproxy-ss-20120403.tar.gz}"
+    version "${3:1.5}"
+    checksum '${4:ba0424bf7d23b3a607ee24bbb855bb0ea347d7ffde0bec0cb12a89623cbaf911}'
+    make_opts [ ${5:'TARGET=linux26'} ]
+    prefix_root '${6:/opt}'
+    prefix_home '${7:/opt}'
+    prefix_bin  '${8:/opt/bin}'
+    action ${9::install_with_make}
+end
+endsnippet
+
+snippet ark "" !b
+ark "${1:ivy}" do
+  path "${2:/home/foobar}"
+  url '${3:http://someurl.example.com/ivy.tar.gz}'
+  checksum '${4:89ba5fde0c596db388c3bbd265b63007a9cc3df3a8e6d79a46780c1a39408cb5}'
+  action ${5::put}
+end
+endsnippet
+
+##################
+#  php cookbook  #
+##################
+
+snippet pearc "" !b
+php_pear_channel "${1:pear.horde.org}" do
+  action ${2::discover}
+end
+endsnippet
+
+snippet pearf "" !b
+remote_file "${1:#{Chef::Config[:file_cache_path]}/symfony-channel.xml}" do
+  source "${2:http://pear.symfony-project.com/channel.xml}"
+  mode ${3:0644}
+end
+
+php_pear_channel "${4:symfony}" do
+  channel_xml "${5:#{Chef::Config[:file_cache_path]}/symfony-channel.xml}"
+  action ${6::add}
+end
+endsnippet
+
+snippet pearm "" !b
+php_pear "${1:XML_RPC}" do
+  version "${2:1.5.4}"
+  action ${3::install}
+end
+endsnippet
+
+###################
+#  sudo cookbook  #
+###################
+
+snippet sudo "" !b
+sudo '${1:tomcat}' do
+  user      "${2:%tomcat}"    # or a username
+  runas     '${3:app_user}'   # or 'app_user:tomcat'
+  nopasswd  ${4:false}
+  commands  [${5:'/etc/init.d/tomcat restart'}]
+end
+endsnippet
+
+##################
+#  gem cookbook  #
+##################
+ 
+snippet gem "" !b
+gem_package "${1:rails}" do
+  source "${2:https://rubygems.org}"
+end
+endsnippet
+
+##################
+#  apt cookbook  #
+##################
+
+snippet apt_repository "" !b
+apt_repository "${1:dotdeb}" do
+  uri "${2:http://packages.dotdeb.org}"
+  distribution node['lsb']['codename']
+  components ["main"]
+  key "${4:http://www.dotdeb.org/dotdeb.gpg}"
+end
+endsnippet
+
+snippet pin_package "" !b
+apt_preference "${1:libmysqlclient16}" do
+  pin "${2:version 5.1.49-3}"
+  pin_priority "${3:700}"
+end
+endsnippet
+
+snippet pin_repo "" !b
+apt_preference "${1:dotdeb}" do
+  glob "*"
+  pin "${2:origin packages.dotdeb.org}"
+  pin_priority "${3:700}"
+end
+endsnippet
+
+##############################
+#  simple_iptables cookbook  #
+##############################
+
+snippet srule "" !b
+simple_iptables_rule "${1:http}" do
+  rule [ ${2:"--proto tcp --dport 80",
+         "--proto tcp --dport 443"} ]
+  jump "${3:ACCEPT}"
+end
+snippetend
+
+snippet spolicy "" !b
+simple_iptables_policy "${1:INPUT}" do
+  policy "${2:DROP}"
+end
+snippetend
+
+snippet slog "" !b
+simple_iptables_rule "${1:system}" do
+  rule "${2:--match limit --limit 5/min --jump LOG --log-prefix \"iptables denied: \" --log-level 7}"
+  jump ${3:false}
+end
+endsnippet
+
+snippet sredirect "" !b
+simple_iptables_rule "${1:tomcat}" do
+  table "${2:nat}"
+  direction "${3:PREROUTING}"
+  rule [ ${4:"--protocol tcp --dport 80 --jump REDIRECT --to-port 8080",
+         "--protocol tcp --dport 443 --jump REDIRECT --to-port 8443"} ]
+  jump ${5:false}
+end
+endsnippet
+
+
+
 # vim:ft=snippets:
