@@ -11,6 +11,14 @@ global !p
             return "default"
 endglobal
 
+snippet default ""
+default["${1:apache}"]["${2:dir}"]          = "${3:/etc/apache2}"
+endsnippet
+
+snippet node ""
+node.default["${1:apache}"]["${2:dir}"]          = "${3:/etc/apache2}"
+endsnippet
+
 # http://docs.opscode.com/resource_common_actions.html
 snippet action "" !b
 action :${1:nothing}
