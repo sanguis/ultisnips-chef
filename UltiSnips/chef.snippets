@@ -695,6 +695,22 @@ simple_iptables_rule "${1:tomcat}" do
 end
 endsnippet
 
+#######################
+#  artifact bookbook  #
+#######################
 
+snippet artifact "" !b
+artifact_deploy "${1:my-artifact}" do
+  version           "${2:1.0.0}"
+  artifact_location "${3:http://www.fooo.com/my-artifact-1.0.0.tgz}"
+  deploy_to         "#{4:/srv/my-artifact}"
+  owner             node[${5::artifact_owner}]
+  group             node[${6::artifact_group}]
+  symlinks({
+    "log" => "log"
+  })
+  force             node[:force_deploy]
+end
+endsnippet
 
 # vim:ft=snippets:
